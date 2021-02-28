@@ -1,3 +1,5 @@
+// adapted from https://en.wikipedia.org/wiki/Sunrise_equation
+
 const julian = require('julian');
 const {format} = require('date-fns');
 
