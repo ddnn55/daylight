@@ -6,9 +6,10 @@ const sin = a => Math.sin(deg2rad(a));
 const cos = a => Math.cos(deg2rad(a));
 const acos = c => rad2deg(Math.acos(c));
 
-const sunDay = (date, longitude, latitude) => {
+const sunDay = (date, latitude, longitude) => {
     const julianDay = +julian(date);
-    const J_star = julianDay - longitude / 360;
+    const n = julianDay - 2451545.0 + 0.0008;
+    const J_star = n - longitude / 360;
     const M = (357.5291 + 0.98560028 * J_star) % 360;
     const C = 1.9148 * sin(M) + 0.0200 * sin(2 * M) + 0.0003 * sin(3 * M);
     const ƛ = (M + C + 180 + 102.9372) % 360;
