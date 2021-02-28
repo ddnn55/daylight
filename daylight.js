@@ -9,7 +9,7 @@ const sin = a => Math.sin(deg2rad(a));
 const cos = a => Math.cos(deg2rad(a));
 const acos = c => rad2deg(Math.acos(c));
 
-const sunDay = (date, latitude, longitude) => {
+const daylight = (date, latitude, longitude) => {
     const julianDay = Math.floor(+julian(date));
     const n = julianDay - 2451545.0 + 0.0008;
     const J_star = n - longitude / 360;
@@ -33,5 +33,5 @@ const sunDay = (date, latitude, longitude) => {
 const formatTime = d => format(d, 'h:mm b')
 
 // Downtown Los Angeles
-const {rise, set} = sunDay(new Date(), 34.05599620105346, -118.24444289288097);
+const {rise, set} = daylight(new Date(), 34.05599620105346, -118.24444289288097);
 console.log({rise: formatTime(rise), set: formatTime(set)});
