@@ -1,5 +1,5 @@
 {
-  "name": "rollup-starter-lib",
+  "name": "daylight",
   "version": "1.0.0",
   "main": "dist/daylight.cjs.js",
   "module": "dist/daylight.esm.js",
