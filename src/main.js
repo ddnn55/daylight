@@ -1,4 +1,9 @@
-// adapted from https://en.wikipedia.org/wiki/Sunrise_equation
+/**
+ * Predict the time of sunrise and sunset.
+ * Adapted from https://en.wikipedia.org/wiki/Sunrise_equation
+ * @module daylight
+ * @typicalname daylight
+ */
 
 import julian from 'julian';
 
