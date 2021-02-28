@@ -9,9 +9,9 @@ const cos = a => Math.cos(deg2rad(a));
 const acos = c => rad2deg(Math.acos(c));
 
 /**
- * @param  {Date} date
- * @param  {Number} latitude north/south location; -90 (south pole) to 90 (north pole)
- * @param  {Number} longitude east/west location; -180 to 180
+ * @param {Date}
+ * @param {Number} - north/south location; -90 (south pole) to 90 (north pole)
+ * @param {Number} - east/west location; -180 to 180
  * @returns {{rise: Date, set: Date}} Predicted time of sunrise and sunset
  */
 export default function daylight(date, latitude, longitude) {
