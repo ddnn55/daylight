@@ -1,13 +1,20 @@
-# daylight
+<a name="module_daylight"></a>
 
-Predict the time of sunrise and sunset for a given date, latitude, and longitude.
+## daylight
+Predict the time of sunrise and sunset.
+Adapted from https://en.wikipedia.org/wiki/Sunrise_equation
 
-## Usage
+<a name="exp_module_daylight--daylight"></a>
 
-```javascript
-const {rise, set} = daylight(
-    new Date(),
-    // Los Angeles
-    34.05599620105346, -118.24444289288097
-);
-```
+### daylight(date, latitude, longitude) ⇒ <code>Object</code> ⏏
+Predict sunrise and sunset.
+
+**Kind**: Exported function  
+**Returns**: <code>Object</code> - Predicted time of sunrise and sunset  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| date | <code>Date</code> |  |
+| latitude | <code>Number</code> | north/south location; -90 (south pole) to 90 (north pole) |
+| longitude | <code>Number</code> | east/west location; -180 to 180 |
+
