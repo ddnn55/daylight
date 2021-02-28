@@ -1,7 +1,6 @@
 // adapted from https://en.wikipedia.org/wiki/Sunrise_equation
 
-const julian = require('julian');
-const {format} = require('date-fns');
+import julian from 'julian';
 
 const deg2rad = d => d * Math.PI / 180;
 const rad2deg = r => r * 180 / Math.PI;
@@ -9,7 +8,7 @@ const sin = a => Math.sin(deg2rad(a));
 const cos = a => Math.cos(deg2rad(a));
 const acos = c => rad2deg(Math.acos(c));
 
-module.exports = daylight = (date, latitude, longitude) => {
+export default function daylight(date, latitude, longitude) {
     const julianDay = Math.floor(+julian(date));
     const n = julianDay - 2451545.0 + 0.0008;
     const J_star = n - longitude / 360;
@@ -29,9 +28,3 @@ module.exports = daylight = (date, latitude, longitude) => {
 
     return {rise: julian.toDate(J_rise), set: julian.toDate(J_set)};
 };
-
-const formatTime = d => format(d, 'h:mm b')
-
-// Downtown Los Angeles
-const {rise, set} = daylight(new Date(), 34.05599620105346, -118.24444289288097);
-console.log({rise: formatTime(rise), set: formatTime(set)});

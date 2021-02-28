@@ -1,6 +1,24 @@
 {
+  "name": "rollup-starter-lib",
+  "version": "1.0.0",
+  "main": "dist/daylight.cjs.js",
+  "module": "dist/daylight.esm.js",
+  "browser": "dist/daylight.umd.js",
   "dependencies": {
-    "date-fns": "^2.17.0",
     "julian": "^0.2.0"
-  }
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.0.1",
+    "@rollup/plugin-node-resolve": "^7.0.0",
+    "rollup": "^1.29.0"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "node test/test.js",
+    "pretest": "npm run build"
+  },
+  "files": [
+    "dist"
+  ]
 }
