@@ -1,4 +1,5 @@
 const julian = require('julian');
+const {format} = require('date-fns');
 
 const deg2rad = d => d * Math.PI / 180;
 const rad2deg = r => r * 180 / Math.PI;
@@ -28,6 +29,8 @@ const sunDay = (date, latitude, longitude) => {
     return {rise: julian.toDate(J_rise), set: julian.toDate(J_set)};
 };
 
+const formatTime = d => format(d, 'h:mm b')
+
 // Downtown Los Angeles
 const {rise, set} = sunDay(new Date(), 34.05599620105346, -118.24444289288097);
-console.log(rise, set);
+console.log({rise: formatTime(rise), set: formatTime(set)});
