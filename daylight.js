@@ -6,6 +6,8 @@ const deg2rad = d => d * Math.PI / 180;
 
 const J_star = (julianDay, longitude) => julianDay - longitude / 360;
 
+const 𝛿 = (julianDay, longitude) => sin(ƛ(julianDay, longitude) * sin(deg2rad(23.44)));
+
 // do we need more specialized inverse cos() handling?
 const w_0 = (latitude) => Math.acos(
     (sin(deg2rad(-0.83)) - sin(latitude) * sin(𝛿())) / (cos(latitude) * cos(𝛿()))
