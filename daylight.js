@@ -8,9 +8,8 @@ const cos = a => Math.cos(deg2rad(a));
 const acos = c => rad2deg(Math.acos(c));
 
 const sunDay = (date, latitude, longitude) => {
-    // should we be rounding this to noon?
-    const julianDay = +julian(date);
-    const n = Math.floor(julianDay) - 2451545.0 + 0.0008;
+    const julianDay = Math.floor(+julian(date));
+    const n = julianDay - 2451545.0 + 0.0008;
     const J_star = n - longitude / 360;
     const M = (357.5291 + 0.98560028 * J_star) % 360;
     const C = 1.9148 * sin(M) + 0.0200 * sin(2 * M) + 0.0003 * sin(3 * M);
