@@ -2,8 +2,8 @@
  * Predict the time of sunrise and sunset.
  * Adapted from https://en.wikipedia.org/wiki/Sunrise_equation
  * @module daylight
- * @typicalname daylight
  */
+export default daylight;
 
 import julian from 'julian';
 
@@ -14,12 +14,14 @@ const cos = a => Math.cos(deg2rad(a));
 const acos = c => rad2deg(Math.acos(c));
 
 /**
+ * Predict sunrise and sunset.
+ * @alias module:daylight
  * @param {Date}
  * @param {Number} - north/south location; -90 (south pole) to 90 (north pole)
  * @param {Number} - east/west location; -180 to 180
  * @returns {{rise: Date, set: Date}} Predicted time of sunrise and sunset
  */
-export default function daylight(date, latitude, longitude) {
+function daylight(date, latitude, longitude) {
     const julianDay = Math.floor(+julian(date));
     const n = julianDay - 2451545.0 + 0.0008;
     const J_star = n - longitude / 360;

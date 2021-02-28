@@ -39,7 +39,6 @@
    * Predict the time of sunrise and sunset.
    * Adapted from https://en.wikipedia.org/wiki/Sunrise_equation
    * @module daylight
-   * @typicalname daylight
    */
 
   const deg2rad = d => d * Math.PI / 180;
@@ -49,6 +48,8 @@
   const acos = c => rad2deg(Math.acos(c));
 
   /**
+   * Predict sunrise and sunset.
+   * @alias module:daylight
    * @param {Date}
    * @param {Number} - north/south location; -90 (south pole) to 90 (north pole)
    * @param {Number} - east/west location; -180 to 180
