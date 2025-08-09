@@ -1,6 +1,6 @@
 {
   "name": "@ddnn55/daylight",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "dist/daylight.cjs.js",
   "module": "dist/daylight.esm.js",
   "browser": "dist/daylight.umd.js",
