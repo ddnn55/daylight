@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daylight Radial Clock</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .clock-container {
+            text-align: center;
+        }
+        
+        .clock-svg {
+            width: 400px;
+            height: 400px;
+            max-width: 90vw;
+            max-height: 90vw;
+        }
+        
+        .time-display {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: 300;
+        }
+        
+        .location-display {
+            margin-top: 10px;
+            font-size: 1em;
+            opacity: 0.8;
+        }
+        
+        .legend {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <svg class="clock-svg" viewBox="0 0 200 200">
+            <!-- Background circle -->
+            <circle cx="100" cy="100" r="90" fill="none" stroke="#333" stroke-width="2"/>
+            
+            <!-- Day/night segments will be added here -->
+            
+            <!-- 24-hour clock hand with black border -->
+            <line id="hour-hand" x1="100" y1="100" x2="100" y2="30" stroke="#000" stroke-width="6" stroke-linecap="round"/>
+            <line id="hour-hand-inner" x1="100" y1="100" x2="100" y2="30" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+            
+            <!-- Center dot -->
+            <circle cx="100" cy="100" r="3" fill="#fff"/>
+        </svg>
+        
+        <div class="time-display" id="time-display"></div>
+        <div class="location-display" id="location-display"></div>
+        
+        <div class="legend" id="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #f0f0f0;"></div>
+                <span>Day</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ffd700;"></div>
+                <span>Golden Hour</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff8c00;"></div>
+                <span>Civil Dusk</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4169e1;"></div>
+                <span>Nautical Dusk</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #191970;"></div>
+                <span>Astronomical Dusk</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #2c2c2c;"></div>
+                <span>Night</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #191970;"></div>
+                <span>Astronomical Dawn</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4169e1;"></div>
+                <span>Nautical Dawn</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff8c00;"></div>
+                <span>Civil Dawn</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../dist/daylight.umd.js"></script>
+    <script>
+        // Default location (San Francisco)
+        const DEFAULT_LATITUDE = 37.7749;
+        const DEFAULT_LONGITUDE = -122.4194;
+        
+        let currentLatitude = DEFAULT_LATITUDE;
+        let currentLongitude = DEFAULT_LONGITUDE;
+        
+        // Get user's location if available
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    currentLatitude = position.coords.latitude;
+                    currentLongitude = position.coords.longitude;
+                    updateClock();
+                },
+                (error) => {
+                    console.log('Using default location:', error.message);
+                    updateClock();
+                }
+            );
+        } else {
+            updateClock();
+        }
+        
+
+        
+        function createArc(startAngle, endAngle, radius, color) {
+            // Convert angles to radians, adjusting for SVG coordinate system
+            const startRad = (startAngle - 90) * Math.PI / 180;
+            const endRad = (endAngle - 90) * Math.PI / 180;
+            
+            // Calculate start and end points on the circle
+            const x1 = 100 + radius * Math.cos(startRad);
+            const y1 = 100 + radius * Math.sin(startRad);
+            const x2 = 100 + radius * Math.cos(endRad);
+            const y2 = 100 + radius * Math.sin(endRad);
+            
+            // Determine if we need a large arc
+            let angleDiff = endAngle - startAngle;
+            if (angleDiff < 0) angleDiff += 360;
+            const largeArcFlag = angleDiff > 180 ? 1 : 0;
+            
+            // Create the path: move to start, arc to end, line to center, close
+            return `<path d="M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} L 100 100 Z" fill="${color}"/>`;
+        }
+        
+        function updateClock() {
+            const now = new Date();
+            const daylightData = daylight(now, currentLatitude, currentLongitude);
+            
+            // Clear existing segments
+            const svg = document.querySelector('.clock-svg');
+            const existingSegments = svg.querySelectorAll('.daylight-segment');
+            existingSegments.forEach(seg => seg.remove());
+            
+            // Create day/night segments based on actual times (in chronological order)
+            const segments = [
+                { start: daylightData.astronomicalDusk, end: daylightData.astronomicalDawn, color: '#2c2c2c' }, // Night
+                { start: daylightData.astronomicalDawn, end: daylightData.nauticalDawn, color: '#191970' }, // Astronomical dawn
+                { start: daylightData.nauticalDawn, end: daylightData.civilDawn, color: '#4169e1' }, // Nautical dawn
+                { start: daylightData.civilDawn, end: daylightData.sunrise, color: '#ff8c00' }, // Civil dawn
+                { start: daylightData.sunrise, end: daylightData.sunset, color: '#f0f0f0' }, // Day
+                { start: daylightData.sunset, end: daylightData.civilDusk, color: '#ffd700' }, // Golden hour
+                { start: daylightData.civilDusk, end: daylightData.nauticalDusk, color: '#ff8c00' }, // Civil dusk
+                { start: daylightData.nauticalDusk, end: daylightData.astronomicalDusk, color: '#4169e1' } // Nautical dusk
+            ];
+            
+            // Handle night period that spans midnight
+            if (daylightData.astronomicalDusk < daylightData.astronomicalDawn) {
+                segments[0] = { start: daylightData.astronomicalDusk, end: new Date(daylightData.astronomicalDusk.getTime() + 24 * 60 * 60 * 1000), color: '#2c2c2c' };
+            }
+            
+            // Convert times to angles and create segments
+            segments.forEach(segment => {
+                const startTime = segment.start.getTime();
+                const endTime = segment.end.getTime();
+                
+                // Convert times to hours of day
+                const startHour = (startTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000);
+                const endHour = (endTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000);
+                
+                // Convert to angles: 15° per hour, with 12:00 at top (0°)
+                // Map: 12:00→0°, 18:00→90°, 00:00→180°, 06:00→270°
+                let startAngle = ((startHour - 12) * 15 + 360) % 360;
+                let endAngle = ((endHour - 12) * 15 + 360) % 360;
+                
+                // Handle negative angles
+                if (startAngle < 0) startAngle += 360;
+                if (endAngle < 0) endAngle += 360;
+                
+                const segmentElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                segmentElement.setAttribute('class', 'daylight-segment');
+                segmentElement.setAttribute('d', createArc(startAngle, endAngle, 90, segment.color).match(/d="([^"]+)"/)[1]);
+                segmentElement.setAttribute('fill', segment.color);
+                svg.insertBefore(segmentElement, svg.firstChild);
+            });
+            
+            // Update 24-hour clock hand (adjusted to match the coordinate system)
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            
+            // Calculate 24-hour angle (15 degrees per hour, plus minutes adjustment)
+            // Map: 12:00→0°, 18:00→90°, 00:00→180°, 06:00→270°
+            const hourAngle = ((hours - 12) * 15 + (minutes * 0.25) + 360) % 360;
+            
+            const hourHand = document.getElementById('hour-hand');
+            const hourHandInner = document.getElementById('hour-hand-inner');
+            hourHand.setAttribute('transform', `rotate(${hourAngle} 100 100)`);
+            hourHandInner.setAttribute('transform', `rotate(${hourAngle} 100 100)`);
+            
+            // Update time display
+            const timeDisplay = document.getElementById('time-display');
+            timeDisplay.textContent = now.toLocaleTimeString();
+            
+            // Update location display
+            const locationDisplay = document.getElementById('location-display');
+            locationDisplay.textContent = `Lat: ${currentLatitude.toFixed(4)}, Lon: ${currentLongitude.toFixed(4)}`;
+            
+            // Update legend with transition times
+            updateLegend(daylightData);
+        }
+        
+        function updateLegend(daylightData) {
+            const legend = document.getElementById('legend');
+            const legendItems = legend.querySelectorAll('.legend-item');
+            
+            // Update each legend item with transition times
+            legendItems[0].innerHTML = `<div class="legend-color" style="background: #f0f0f0;"></div><span>Day (${daylightData.sunrise.toLocaleTimeString()} - ${daylightData.sunset.toLocaleTimeString()})</span>`;
+            legendItems[1].innerHTML = `<div class="legend-color" style="background: #ffd700;"></div><span>Golden Hour (${daylightData.sunset.toLocaleTimeString()} - ${daylightData.civilDusk.toLocaleTimeString()})</span>`;
+            legendItems[2].innerHTML = `<div class="legend-color" style="background: #ff8c00;"></div><span>Civil Dusk (${daylightData.civilDusk.toLocaleTimeString()} - ${daylightData.nauticalDusk.toLocaleTimeString()})</span>`;
+            legendItems[3].innerHTML = `<div class="legend-color" style="background: #4169e1;"></div><span>Nautical Dusk (${daylightData.nauticalDusk.toLocaleTimeString()} - ${daylightData.astronomicalDusk.toLocaleTimeString()})</span>`;
+            legendItems[4].innerHTML = `<div class="legend-color" style="background: #191970;"></div><span>Astronomical Dusk (${daylightData.astronomicalDusk.toLocaleTimeString()} - ${daylightData.astronomicalDawn.toLocaleTimeString()})</span>`;
+            legendItems[5].innerHTML = `<div class="legend-color" style="background: #2c2c2c;"></div><span>Night (${daylightData.astronomicalDusk.toLocaleTimeString()} - ${daylightData.astronomicalDawn.toLocaleTimeString()})</span>`;
+            legendItems[6].innerHTML = `<div class="legend-color" style="background: #191970;"></div><span>Astronomical Dawn (${daylightData.astronomicalDawn.toLocaleTimeString()} - ${daylightData.nauticalDawn.toLocaleTimeString()})</span>`;
+            legendItems[7].innerHTML = `<div class="legend-color" style="background: #4169e1;"></div><span>Nautical Dawn (${daylightData.nauticalDawn.toLocaleTimeString()} - ${daylightData.civilDawn.toLocaleTimeString()})</span>`;
+            legendItems[8].innerHTML = `<div class="legend-color" style="background: #ff8c00;"></div><span>Civil Dawn (${daylightData.civilDawn.toLocaleTimeString()} - ${daylightData.sunrise.toLocaleTimeString()})</span>`;
+        }
+        
+        // Update clock every given milliseconds
+        setInterval(updateClock, 1000);
+        
+        // Initial update
+        updateClock();
+    </script>
+</body>
+</html>
